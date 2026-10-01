@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register · AI Career Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="background">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <div class="particle-field" id="particleField"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="glass-container">
+        <div class="logo">
+            <i class="fas fa-user-astronaut"></i>
+            <h1>Join Us</h1>
+        </div>
+        <p class="welcome-text">Create your AI Career account</p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" placeholder="Username" value="{{ username or '' }}" required minlength="3">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email address" value="{{ email or '' }}" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required minlength="6">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="confirm_password" placeholder="Confirm password" required minlength="6">
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="footer-links">
+            <a href="{{ url_for('login') }}"><i class="fas fa-arrow-left"></i> Back to Login</a>
+        </div>
+
+        <div class="tech-stack">
+            <span class="tech-badge"><i class="fab fa-python"></i> Flask</span>
+            <span class="tech-badge"><i class="fas fa-database"></i> SQLite</span>
+            <span class="tech-badge"><i class="fas fa-shield-alt"></i> Hashed</span>
+            <span class="tech-badge"><i class="fas fa-brain"></i> AI Match</span>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

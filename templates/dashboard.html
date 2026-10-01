@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · AI Career Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Background -->
+    <div class="background">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <div class="particle-field" id="particleField"></div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="dashboard-wrapper">
+        <!-- Header -->
+        <header class="dash-header glass-panel">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>AI Career Advisor</h1>
+            </div>
+            <div class="user-info">
+                <span><i class="fas fa-user-circle"></i> {{ username }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </header>
+
+        <!-- Skills Section -->
+        <section class="glass-panel skills-section">
+            <h2><i class="fas fa-tools"></i> Your Skills</h2>
+            <p class="subtitle">Add your skills and our AI will match you with the best careers.</p>
+
+            <form id="skillForm" class="skill-form" onsubmit="event.preventDefault(); addSkill();">
+                <input type="text" id="skillInput" placeholder="e.g. Python, React, SQL..." autocomplete="off">
+                <button type="submit" class="btn-primary btn-small">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </form>
+
+            <div class="skill-tags" id="skillTags">
+                {% for skill in user_skills %}
+                    <span class="skill-tag"><i class="fas fa-check"></i> {{ skill }}</span>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Career Matches -->
+        <section class="glass-panel matches-section">
+            <h2><i class="fas fa-brain"></i> AI Career Matches</h2>
+            <p class="subtitle">Based on your skills — top career paths for you.</p>
+
+            <div class="matches-grid" id="matchesGrid">
+                {% if matches %}
+                    {% for m in matches %}
+                        <div class="match-card">
+                            <div class="match-header">
+                                <h3>{{ m['title'] }}</h3>
+                                <div class="match-score">
+                                    <span class="score-value">{{ m['match_score'] }}%</span>
+                                    <span class="score-label">match</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ m['match_score'] }}%;"></div>
+                            </div>
+                            <p class="match-desc">{{ m['description'] }}</p>
+                            <div class="match-meta">
+                                <span><i class="fas fa-dollar-sign"></i> {{ m['avg_salary'] }}</span>
+                                <span><i class="fas fa-chart-line"></i> {{ m['growth_rate'] }}</span>
+                            </div>
+                            <div class="match-skills">
+                                <strong>Skills needed:</strong>
+                                <div class="skill-tags small">
+                                    {% for s in m['required_skills'].split(',') %}
+                                        <span class="skill-tag {% if s.strip().lower() in user_skills_lower %}matched{% endif %}">
+                                            {{ s.strip() }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-lightbulb"></i>
+                        <p>Add some skills above to see your AI-powered career matches!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <footer class="dash-footer">
+            <p>© 2025 AI Career Advisor · Built with Flask + SQLite</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
